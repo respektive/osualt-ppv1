@@ -34,10 +34,7 @@ async def update_scores_top():
         is_pf boolean,
         accuracy numeric(5,2),
         pos integer,
-        PRIMARY KEY (user_id, beatmap_id),
-        INDEX idx_scores_top_score (score),
-        INDEX idx_scores_top_user_id (user_id),
-        INDEX idx_scores_top_beatmap_id (beatmap_id)
+        PRIMARY KEY (user_id, beatmap_id)
         )
     """)
 
