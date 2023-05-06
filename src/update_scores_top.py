@@ -44,13 +44,12 @@ async def update_scores_top():
     await db.execute_query("DELETE FROM scores_top")
 
     await db.execute_query("""
-        INSERT INTO scores_top
-        SELECT *,
-           NULL AS pp
+        INSERT INTO scores_top (user_id, beatmap_id, score, count300, count100, count50, countmiss, combo, perfect, enabled_mods, date_played, rank, pp, replay_available, is_hd, is_hr, is_dt, is_fl, is_ht, is_ez, is_nf, is_nc, is_td, is_so, is_sd, is_pf, accuracy)
+        SELECT user_id, beatmap_id, score, count300, count100, count50, countmiss, combo, perfect, enabled_mods, date_played, rank, NULL AS pp, replay_available, is_hd, is_hr, is_dt, is_fl, is_ht, is_ez, is_nf, is_nc, is_td, is_so, is_sd, is_pf, accuracy
         FROM (
-          SELECT *,
-                 row_number() OVER (PARTITION BY beatmap_id ORDER BY score DESC) AS pos
-          FROM scores
+        SELECT *,
+                row_number() OVER (PARTITION BY beatmap_id ORDER BY score DESC) AS pos
+        FROM scores
         ) t
         WHERE t.pos <= 500
         ON CONFLICT DO NOTHING
