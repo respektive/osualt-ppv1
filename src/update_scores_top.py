@@ -52,12 +52,13 @@ async def update_scores_top():
     await db.execute_query("CREATE INDEX idx_scores_top_score ON scores_top (score)")
     await db.execute_query("CREATE INDEX idx_scores_top_user_id ON scores_top (user_id)")
     await db.execute_query("CREATE INDEX idx_scores_top_beatmap_id ON scores_top (beatmap_id)")
+    await db.execute_query("GRANT SELECT ON scores_top TO bot")
 
     print("Inserting scores...")
 
     await db.execute_query("""
-        INSERT INTO scores_top (user_id, beatmap_id, score, count300, count100, count50, countmiss, combo, perfect, enabled_mods, date_played, rank, pp, replay_available, is_hd, is_hr, is_dt, is_fl, is_ht, is_ez, is_nf, is_nc, is_td, is_so, is_sd, is_pf, accuracy)
-        SELECT user_id, beatmap_id, score, count300, count100, count50, countmiss, combo, perfect, enabled_mods, date_played, rank, NULL AS pp, replay_available, is_hd, is_hr, is_dt, is_fl, is_ht, is_ez, is_nf, is_nc, is_td, is_so, is_sd, is_pf, accuracy
+        INSERT INTO scores_top (user_id, beatmap_id, score, count300, count100, count50, countmiss, combo, perfect, enabled_mods, date_played, rank, pp, replay_available, is_hd, is_hr, is_dt, is_fl, is_ht, is_ez, is_nf, is_nc, is_td, is_so, is_sd, is_pf, accuracy, pos)
+        SELECT user_id, beatmap_id, score, count300, count100, count50, countmiss, combo, perfect, enabled_mods, date_played, rank, NULL AS pp, replay_available, is_hd, is_hr, is_dt, is_fl, is_ht, is_ez, is_nf, is_nc, is_td, is_so, is_sd, is_pf, accuracy, pos
         FROM (
         SELECT *,
                 row_number() OVER (PARTITION BY beatmap_id ORDER BY score DESC) AS pos
