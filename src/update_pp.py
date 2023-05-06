@@ -11,7 +11,8 @@ async def update_pp():
 
     print("Gathering beatmap info...")
 
-    result = await db.execute_query("""WITH max_playcount AS (
+    result = await db.execute_query("""
+    WITH max_playcount AS (
         SELECT set_id, mode, MAX(playcount) AS max_playcount
         FROM beatmaps
         GROUP BY set_id, mode
@@ -23,7 +24,7 @@ async def update_pp():
     INNER JOIN beatmaps_eyup AS e ON b.beatmap_id = e.beatmap_id
     INNER JOIN max_playcount AS mp ON b.set_id = mp.set_id AND b.mode = mp.mode
     INNER JOIN beatmap_ss_ratio AS bss ON b.beatmap_id = bss.beatmap_id
-    WHERE b.approved BETWEEN 1 AND 2 AND b.mode = 0
+    WHERE b.approved BETWEEN 1 AND 2 AND b.mode = 0 AND mp.max_playcount > 0
     """)
 
     # Convert results to dictionary with beatmap_id keys

@@ -5,7 +5,8 @@ from db import Database
 async def update_scores_top():
     db = Database()
 
-    await db.execute_query("""CREATE TABLE IF NOT EXISTS scores_top (
+    await db.execute_query("""
+    CREATE TABLE IF NOT EXISTS scores_top (
         user_id integer NOT NULL,
         beatmap_id integer NOT NULL,
         score integer,
