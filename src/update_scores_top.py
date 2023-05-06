@@ -50,6 +50,7 @@ async def update_scores_top():
         SELECT *,
                 row_number() OVER (PARTITION BY beatmap_id ORDER BY score DESC) AS pos
         FROM scores
+        WHERE user_id IN (SELECT user_id FROM priorityuser)
         ) t
         WHERE t.pos <= 500
         ON CONFLICT DO NOTHING
