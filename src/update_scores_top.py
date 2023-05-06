@@ -19,7 +19,7 @@ async def update_scores_top():
         enabled_mods character varying,
         date_played timestamp without time zone,
         rank character varying(3),
-        pp numeric(9,4),
+        pp numeric(10,3) DEFAULT NULL,
         replay_available smallint,
         is_hd boolean,
         is_hr boolean,
@@ -45,7 +45,8 @@ async def update_scores_top():
 
     await db.execute_query("""
         INSERT INTO scores_top
-        SELECT *
+        SELECT *,
+           NULL AS pp
         FROM (
           SELECT *,
                  row_number() OVER (PARTITION BY beatmap_id ORDER BY score DESC) AS pos
