@@ -9,7 +9,11 @@ async def update_ss_ratio():
 
     start_time = time.time()
 
+    print("Deleting from table...")
+
     await db.execute_query("DELETE FROM beatmap_ss_ratio")
+
+    print("Inserting into table...")
 
     await db.execute_query("""
         WITH ss_counts AS (
@@ -25,6 +29,8 @@ async def update_ss_ratio():
     """)
 
     end_time = time.time()
+
+    print("Done.")
 
     print(f"Elapsed time: {end_time - start_time} seconds.")
 
