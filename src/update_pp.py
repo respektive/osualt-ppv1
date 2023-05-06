@@ -2,12 +2,15 @@ import math
 import time
 import datetime
 import asyncio
+import sys
 from db import Database
 
 CUTOFF_SCORE = 0.001
 
 async def update_pp():
     db = Database()
+
+    args = sys.argv
 
     print("Gathering beatmap info...")
 
@@ -37,11 +40,15 @@ async def update_pp():
     print(len(beatmap_info), "found")
     print("Gathering users...")
     
-    user_id = 0
-    if user_id > 0:
-        users = await db.execute_query(f"SELECT user_id, username, ranked_score, pp FROM users2 WHERE user_id = {user_id}")
-    else:
+    arg = None
+    if len(args) > 1:
+        arg = args[1]
+    if arg and arg.isdigit() and int(arg) > 0:
+        users = await db.execute_query(f"SELECT user_id, username, ranked_score, pp FROM users2 WHERE user_id = {arg}")
+    elif arg and arg == "full":
         users = await db.execute_query("SELECT user_id, username, ranked_score, pp FROM users2 WHERE ranked_score > 0 ORDER BY ranked_score DESC")
+    else:
+        users = await db.execute_query("SELECT user_id, username, ranked_score, pp FROM users2 WHERE ranked_score > 0 AND user_id IN (SELECT user_id FROM priorityuser) ORDER BY ranked_score DESC")
 
     total_users = len(users)
     print(total_users, "found")
@@ -115,7 +122,11 @@ async def update_pp():
                 this_accuracies.append(this_accuracy)
 
             # add score to list of scores to update
-            update_queries.append(f"({u['user_id']}, {s['beatmap_id']}, {this_score})")
+            update = False
+            if len(args) >= 2:
+                update = True
+            if update:
+                update_queries.append(f"({u['user_id']}, {s['beatmap_id']}, {this_score})")
 
         # generate single update query to update all scores
         if update_queries:
