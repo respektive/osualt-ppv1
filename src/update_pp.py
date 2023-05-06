@@ -123,7 +123,7 @@ async def update_pp():
 
             # add score to list of scores to update
             update = False
-            if len(args) >= 2:
+            if len(args) > 2:
                 update = True
             if update:
                 update_queries.append(f"({u['user_id']}, {s['beatmap_id']}, {this_score})")
