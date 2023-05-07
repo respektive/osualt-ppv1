@@ -7,12 +7,6 @@ async def update_scores_top():
 
     start_time = time.time()
 
-    print("Dropping old table...")
-
-    await db.execute_query("DROP TABLE scores_top")
-
-    print("Creating new table...")
-
     await db.execute_query("""
     CREATE TABLE IF NOT EXISTS scores_top (
         user_id integer NOT NULL,
@@ -47,12 +41,9 @@ async def update_scores_top():
         )
     """)
 
-    print("Creating indexes...")
+    print("Deleting from table...")
 
-    await db.execute_query("CREATE INDEX idx_scores_top_score ON scores_top (score)")
-    await db.execute_query("CREATE INDEX idx_scores_top_user_id ON scores_top (user_id)")
-    await db.execute_query("CREATE INDEX idx_scores_top_beatmap_id ON scores_top (beatmap_id)")
-    await db.execute_query("GRANT SELECT ON scores_top TO bot")
+    await db.execute_query("DELETE FROM scores_top")
 
     print("Inserting scores...")
 
