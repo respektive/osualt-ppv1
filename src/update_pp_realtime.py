@@ -227,7 +227,7 @@ async def update_pp_realtime():
             rank_score = max(0, math.log(rank_score + 1) * 400)
 
         if i % 1 == 0:
-            print(f"{i+1}/{total_users} {u['user_id']} {u['username']} ({i/total_users*100:.2f}%): {u['ppv1']:.0f}pp -> {rank_score:.0f}pp")
+            print(f"{i+1}/{total_users} {u['user_id']} {u['username']} ({i/total_users*100:.2f}%): {u['ppv1']:.2f}pp -> {rank_score:.2f}pp")
             
         await db.execute_query(f"INSERT INTO users_ppv1 VALUES ({u['user_id']}, {rank_score}, {accuracy}) ON CONFLICT (user_id) DO UPDATE SET ppv1 = EXCLUDED.ppv1, accuracyv1 = EXCLUDED.accuracyv1")
 
