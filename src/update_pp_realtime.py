@@ -103,15 +103,25 @@ async def update_pp_realtime():
 
     print(len(beatmap_info), "found")
     print("Gathering users...")
+
     
-    users = await db.execute_query("SELECT user_id, username, ranked_score, pp, ppv1 FROM users2 INNER JOIN users_ppv1 USING (user_id) WHERE ranked_score > 0 ORDER BY ranked_score DESC")
+    beatmap_ids = [str(record['beatmap_id']) for record in beatmaps_to_update]
+    beatmap_ids_str = ','.join(beatmap_ids)
+
+    users_to_update = await db.execute_query(f"""
+    SELECT DISTINCT user_id
+    FROM scores_top
+    WHERE beatmap_id in ({beatmap_ids_str})
+    """)
+    user_ids = [str(record['user_id']) for record in users_to_update]
+    user_ids_str = ','.join(user_ids)
+    
+    users = await db.execute_query(f"SELECT user_id, username, ranked_score, pp, ppv1 FROM users2 INNER JOIN users_ppv1 USING (user_id) WHERE ranked_score > 0 AND user_id IN ({user_ids_str}) ORDER BY ranked_score DESC")
 
     total_users = len(users)
     print(total_users, "found")
     print("Calculating per-user scores...")
 
-    beatmap_ids = [str(record['beatmap_id']) for record in beatmaps_to_update]
-    beatmap_ids_str = ','.join(beatmap_ids)
 
     for i, u in enumerate(users):
         this_scores = []
