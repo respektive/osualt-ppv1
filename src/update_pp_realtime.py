@@ -192,35 +192,35 @@ async def update_pp_realtime():
             update_query = f"UPDATE {TOP_SCORE_TABLE} SET pp = new_values.pp FROM (VALUES {','.join(update_queries)}) AS new_values(user_id, beatmap_id, pp) WHERE {TOP_SCORE_TABLE}.user_id = new_values.user_id AND {TOP_SCORE_TABLE}.beatmap_id = new_values.beatmap_id"
             await db.execute_query(update_query)
 
-        # rank_score = 0
-        # accuracy = 0
-        # accuracy_total = 0
+        rank_score = 0
+        accuracy = 0
+        accuracy_total = 0
 
-        # if len(this_scores) > 0:
-        #     this_scores, this_accuracies = zip(*sorted(zip(this_scores, this_accuracies), reverse=True))
+        if len(this_scores) > 0:
+            this_scores, this_accuracies = zip(*sorted(zip(this_scores, this_accuracies), reverse=True))
             
-        #     j = 1
-        #     rank_score = 0
-        #     for s in this_scores:
-        #         rank_score += s * j
-        #         j *= 0.994
+            j = 1
+            rank_score = 0
+            for s in this_scores:
+                rank_score += s * j
+                j *= 0.994
             
-        #     j = 1
-        #     accuracy = 0
-        #     accuracy_total = 0
-        #     for a in this_accuracies:
-        #         accuracy += a * j
-        #         accuracy_total += j
-        #         j *= 0.996
+            j = 1
+            accuracy = 0
+            accuracy_total = 0
+            for a in this_accuracies:
+                accuracy += a * j
+                accuracy_total += j
+                j *= 0.996
             
-        #     accuracy /= accuracy_total
+            accuracy /= accuracy_total
             
-        #     rank_score = max(0, math.log(rank_score + 1) * 400)
+            rank_score = max(0, math.log(rank_score + 1) * 400)
 
         if i % 100 == 0:
-            print(f"{i+1}/{total_users} {u['user_id']} {u['username']} ({i/total_users*100:.2f}%)")
+            print(f"{i+1}/{total_users} {u['user_id']} {u['username']} ({i/total_users*100:.2f}%): {u['ppv1']:.2f}pp -> {rank_score:.2f}pp")
             
-        # await db.execute_query(f"INSERT INTO users_ppv1 VALUES ({u['user_id']}, {rank_score}, {accuracy}) ON CONFLICT (user_id) DO UPDATE SET ppv1 = EXCLUDED.ppv1, accuracyv1 = EXCLUDED.accuracyv1")
+        await db.execute_query(f"INSERT INTO users_ppv1 VALUES ({u['user_id']}, {rank_score}, {accuracy}) ON CONFLICT (user_id) DO UPDATE SET ppv1 = EXCLUDED.ppv1, accuracyv1 = EXCLUDED.accuracyv1")
 
     end_time = time.time()
 
