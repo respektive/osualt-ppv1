@@ -118,6 +118,7 @@ async def update_pp_realtime():
         this_scores = []
         this_accuracies = []
         update_queries = []
+        user_values = []
 
         count = await db.execute_query(f"SELECT COUNT(*) as c FROM {TOP_SCORE_TABLE} t WHERE user_id = {u['user_id']}")
         if count[0]["c"] <= 0:
@@ -220,7 +221,12 @@ async def update_pp_realtime():
         if i % 100 == 0:
             print(f"{i+1}/{total_users} {u['user_id']} {u['username']} ({i/total_users*100:.2f}%): {u['ppv1']:.2f}pp -> {rank_score:.2f}pp")
             
-        await db.execute_query(f"INSERT INTO users_ppv1 VALUES ({u['user_id']}, {rank_score}, {accuracy}) ON CONFLICT (user_id) DO UPDATE SET ppv1 = EXCLUDED.ppv1, accuracyv1 = EXCLUDED.accuracyv1")
+        user_values.append(f"({u['user_id']}, {rank_score}, {accuracy})")
+
+    # insert all user values into the table
+    if user_values:
+        query = f"INSERT INTO users_ppv1 (user_id, ppv1, accuracyv1) VALUES {','.join(user_values)} ON CONFLICT (user_id) DO UPDATE SET ppv1 = EXCLUDED.ppv1, accuracyv1 = EXCLUDED.accuracyv1"
+        await db.execute_query(query)
 
     end_time = time.time()
 
