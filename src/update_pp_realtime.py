@@ -29,15 +29,12 @@ async def update_pp_realtime():
 
     print("beatmaps found:", len(beatmaps_to_update))
 
+    print("Updating scores_top and ss_ratio...")
+
     for b in beatmaps_to_update:
         b_id = b["beatmap_id"]
-        print("Updating scores_top for beatmap_id:", b_id)
-
-        print("Deleting from table...")
 
         await db.execute_query(f"DELETE FROM scores_top WHERE beatmap_id = {b_id}")
-
-        print("Inserting scores...")
 
         await db.execute_query(f"""
             INSERT INTO scores_top (user_id, beatmap_id, score, count300, count100, count50, countmiss, combo, perfect, enabled_mods, date_played, rank, pp, replay_available, is_hd, is_hr, is_dt, is_fl, is_ht, is_ez, is_nf, is_nc, is_td, is_so, is_sd, is_pf, accuracy, pos)
@@ -52,13 +49,7 @@ async def update_pp_realtime():
             ON CONFLICT DO NOTHING
         """)
 
-        print("Updating ss_ratio for beatmap_id:", b_id)
-
-        print("Deleting from table...")
-
         await db.execute_query(f"DELETE FROM beatmap_ss_ratio WHERE beatmap_id = {b_id}")
-
-        print("Inserting into table...")
 
         await db.execute_query(f"""
             WITH ss_counts AS (
@@ -74,7 +65,7 @@ async def update_pp_realtime():
             FROM ss_counts
         """)
 
-    print("Updating pp values for all users on beatmaps")
+    print("Updating pp values for all users on beatmaps...")
 
     print("Gathering beatmap info...")
 
@@ -226,7 +217,7 @@ async def update_pp_realtime():
             
             rank_score = max(0, math.log(rank_score + 1) * 400)
 
-        if i % 1 == 0:
+        if i % 100 == 0:
             print(f"{i+1}/{total_users} {u['user_id']} {u['username']} ({i/total_users*100:.2f}%): {u['ppv1']:.2f}pp -> {rank_score:.2f}pp")
             
         await db.execute_query(f"INSERT INTO users_ppv1 VALUES ({u['user_id']}, {rank_score}, {accuracy}) ON CONFLICT (user_id) DO UPDATE SET ppv1 = EXCLUDED.ppv1, accuracyv1 = EXCLUDED.accuracyv1")
