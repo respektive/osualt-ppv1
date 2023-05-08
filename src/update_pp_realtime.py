@@ -131,7 +131,7 @@ async def update_pp_realtime():
                 continue
 
             if s["beatmap_id"] not in beatmap_ids and s["pp"]:
-                this_scores.append(s["pp"])
+                this_scores.append(float(s["pp"]))
                 this_accuracies.append(calculate_accuracy(s))
                 continue
 
