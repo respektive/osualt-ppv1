@@ -118,11 +118,11 @@ async def update_pp_realtime():
         this_accuracies = []
         update_queries = []
 
-        count = await db.execute_query(f"SELECT COUNT(*) as c FROM {TOP_SCORE_TABLE} t WHERE user_id = {u['user_id']} AND beatmap_id IN ({beatmap_ids_str})")
+        count = await db.execute_query(f"SELECT COUNT(*) as c FROM {TOP_SCORE_TABLE} t WHERE user_id = {u['user_id']}")
         if count[0]["c"] <= 0:
             continue
         
-        scores = await db.execute_query(f"""SELECT * FROM {TOP_SCORE_TABLE} WHERE user_id = {u['user_id']} AND beatmap_id IN ({beatmap_ids_str})""")
+        scores = await db.execute_query(f"""SELECT * FROM {TOP_SCORE_TABLE} WHERE user_id = {u['user_id']}""")
 
         for s in scores:
             b_info = beatmap_info.get(s["beatmap_id"])
