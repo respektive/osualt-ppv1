@@ -103,6 +103,7 @@ async def update_pp_realtime():
     SELECT DISTINCT user_id
     FROM scores_top
     WHERE beatmap_id in ({beatmap_ids_str})
+    AND user_id IN (SELECT user_id FROM priorityuser)
     """)
     user_ids = [str(record['user_id']) for record in users_to_update]
     user_ids_str = ','.join(user_ids)
