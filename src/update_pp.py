@@ -121,12 +121,12 @@ async def update_pp():
                 this_scores.append(this_score)
                 this_accuracies.append(this_accuracy)
 
-            # add score to list of scores to update
-            update = False
-            if len(args) > 2:
-                update = True
-            if update:
-                update_queries.append(f"({u['user_id']}, {s['beatmap_id']}, {this_score})")
+        # add score to list of scores to update
+        update = False
+        if len(args) > 2:
+            update = True
+        if update:
+            update_queries.append(f"({u['user_id']}, {s['beatmap_id']}, {this_score})")
 
         # generate single update query to update all scores
         if update_queries:
