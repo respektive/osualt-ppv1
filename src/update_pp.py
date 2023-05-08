@@ -46,7 +46,7 @@ async def update_pp():
     if arg and arg.isdigit() and int(arg) > 0:
         users = await db.execute_query(f"SELECT user_id, username, ranked_score, pp FROM users2 WHERE user_id = {arg}")
     elif arg and arg == "full":
-        users = await db.execute_query("SELECT distinct user_id FROM scores_top ORDER BY user_id ASC")
+        users = await db.execute_query("SELECT user_id, username, ranked_score, pp FROM users2 WHERE ranked_score > 0 ORDER BY ranked_score DESC")
     else:
         users = await db.execute_query("SELECT user_id, username, ranked_score, pp FROM users2 WHERE ranked_score > 0 AND user_id IN (SELECT user_id FROM priorityuser) ORDER BY ranked_score DESC")
 
@@ -158,8 +158,8 @@ async def update_pp():
             
             rank_score = max(0, math.log(rank_score + 1) * 400)
 
-        if i % 100 == 0:
-            print(f"{i+1}/{total_users} {u['user_id']} {u['username'] if 'username' in u else ''} ({i/total_users*100:.2f}%): {(u['pp'] if 'pp' in u else 0):.0f}pp -> {rank_score:.0f}pp")
+        if i % 1 == 0:
+            print(f"{i+1}/{total_users} {u['user_id']} {u['username']} ({i/total_users*100:.2f}%): {u['pp']:.0f}pp -> {rank_score:.0f}pp")
             
         await db.execute_query(f"INSERT INTO users_ppv1 VALUES ({u['user_id']}, {rank_score}, {accuracy}) ON CONFLICT (user_id) DO UPDATE SET ppv1 = EXCLUDED.ppv1, accuracyv1 = EXCLUDED.accuracyv1")
 
